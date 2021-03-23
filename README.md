@@ -1,3 +1,4 @@
+[![Run on Repl.it](https://repl.it/badge/github/muhammadzaki693/Discord-bots)](https://repl.it/github/muhammadzaki693/Discord-bots)
 add env write
 ```
 TOKEN=yourtoken
