@@ -4,10 +4,16 @@ import os
 import json
 import random
 from discord.ext import commands
-from cogs import development, devs, member
+#from cogs import development, devs, member
 from ext import utils
 from keep_alive import keep_alive
 from pretty_help import PrettyHelp, Navigation
+
+cogss = [
+  "cogs.member",
+  "cogs.devs",
+  "cogs.development"
+]
 
 async def animationstatus():
     await bot.wait_until_ready()
@@ -41,9 +47,30 @@ bot.help_command = PrettyHelp(
   no_category="no category cmd"
 )
 
+@bot.command()
+async def edit(ctx):
+	  msg = await ctx.send("[>")
+	  await asyncio.sleep(1)
+	  await msg.edit(content="[>>")
+	  await asyncio.sleep(1)
+	  await msg.edit(content="[>>>")
+	  await asyncio.sleep(1)
+	  await msg.edit(content="[>>>>")
+	  await asyncio.sleep(1)
+	  await msg.edit(content="[>>>>>")
+	  await asyncio.sleep(1)
+	  await msg.edit(content="[>>>>>>")
+	  await asyncio.sleep(1)
+	  await msg.edit(content="[>>>>>>>")
+	  await asyncio.sleep(1)
+	  await msg.edit(content="[>>>>>>>>")
+	  await asyncio.sleep(1)
+	  await msg.edit(content="[>>>>>>>>>")
+	  await asyncio.sleep(1)
+	  await msg.edit(content="[>>>>>>>>>>")
+
 keep_alive()
-bot.add_cog(development.development_command(bot))
-bot.add_cog(devs.owner_command(bot))
-bot.add_cog(member.member_command(bot))
+for file in cogss:
+  bot.load_extension(file)
 bot.loop.create_task(animationstatus())
 bot.run(os.getenv("TOKEN"))

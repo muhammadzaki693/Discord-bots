@@ -37,21 +37,6 @@ class member_command(commands.Cog):
         await ctx.send(f'pong! {round(self.bot.latency * 1000)}ms')
     
     @commands.command()
-    async def random(self, ctx, mode, *, text):
-        if mode == "int":
-          embed = discord.Embed()
-          embed.title = "int"
-          embed.description = f"{random.randint(int(text[0]),int(text[1]))}"
-          embed.set_footer(text="int")
-          await ctx.send(embed=embed)
-        elif mode == "float":
-          embed = discord.Embed()
-          embed.title = "float"
-          embed.description = f"{random.random()}"
-          embed.set_footer(text="float")
-          await ctx.send(embed=embed)
-    
-    @commands.command()
     async def info(self, ctx):
         em=discord.Embed(title="userinfo", description="userinfo")
         em.add_field(name="name", value=ctx.author.name, inline=True)
@@ -68,7 +53,7 @@ class member_command(commands.Cog):
     async def say(self, ctx, *,text : str):
         await ctx.send(text)
     
-    @commands.command(help="")
+    @commands.command()
     async def inspire(self, ctx):
         quote = get_quote()
         await ctx.send(quote)
@@ -87,3 +72,13 @@ class member_command(commands.Cog):
     async def reverse(self,ctx,*,text : str):
         reverse_text = get_reverse(text)
         await ctx.send(reverse_text)
+    
+    @commands.command()
+    async def shuffle(self,ctx,*,text:str):
+        response = requests.get(f"https://api.monkedev.com/fun/shuffle?content={text}")
+        json_data = json.loads(response.text)
+        result = json_data["result"]
+        await ctx.send(result)
+
+def setup(bot):
+  bot.add_cog(member_command(bot))

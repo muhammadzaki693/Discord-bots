@@ -8,3 +8,6 @@ class development_command(commands.Cog):
     @commands.command()
     async def google(self, ctx):
         await ctx.send("development command not a member_command or active commands")
+
+def setup(bot):
+  bot.add_cog(development_command(bot))
