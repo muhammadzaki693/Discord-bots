@@ -3,4 +3,4 @@ add env write
 ```
 TOKEN=yourtoken
 ```
-and data.json in data your data in there
+and data.json in data folder(make the folder name data) your data in there

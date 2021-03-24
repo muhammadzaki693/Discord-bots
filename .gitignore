@@ -1,2 +1,4 @@
 .env
-data/*
+.gitignore
+data
+__pycache__
