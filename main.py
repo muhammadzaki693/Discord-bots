@@ -4,7 +4,6 @@ import os
 import json
 import random
 from discord.ext import commands
-#from cogs import development, devs, member
 from ext import utils
 from keep_alive import keep_alive
 from pretty_help import PrettyHelp, Navigation
