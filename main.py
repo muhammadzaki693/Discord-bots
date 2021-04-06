@@ -5,19 +5,16 @@ import json
 import random
 from discord.ext import commands
 from ext import utils
-from keep_alive import keep_alive
+from ext import keep_alive
 from pretty_help import PrettyHelp, Navigation
 
-cogss = [
-  "cogs.member",
-  "cogs.devs",
-  "cogs.development"
-]
+with open("data/auth.json") as f:
+  auth = json.load(f)
 
 async def animationstatus():
     await bot.wait_until_ready()
     
-    statuses = ["code", f"{len(bot.guilds)} server | > help", "discord.py", "python"]
+    statuses = ("code", f"{len(bot.guilds)} server | > help", "discord.py", "python")
     
     while not bot.is_closed():
         status = random.choice(statuses)
@@ -28,7 +25,27 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or('>',':','$','<','_'
 
 @bot.event
 async def on_ready():
-    print("bot online")
+    print(f"""
+logged as: {bot.user.name}
+bot version: {auth['version']}
+-----
+cogs
+
+member.py
+devs.py
+development.py
+-----
+    """)
+
+@bot.event
+async def on_message(message):
+    if message.author == bot.user or message.author.bot:
+      return "is bot"
+    
+    if message.author.id == auth.blacklist:
+      return "blacklist"
+    
+    await bot.process_commands(message)
 
 # custom ending note using the command context and help command formatters
 ending_note = "The ending not from {ctx.bot.user.name}\nFor command {help.clean_prefix}{help.invoked_with}"
@@ -48,28 +65,19 @@ bot.help_command = PrettyHelp(
 
 @bot.command()
 async def edit(ctx):
-	  msg = await ctx.send("[>")
-	  await asyncio.sleep(1)
-	  await msg.edit(content="[>>")
-	  await asyncio.sleep(1)
-	  await msg.edit(content="[>>>")
-	  await asyncio.sleep(1)
-	  await msg.edit(content="[>>>>")
-	  await asyncio.sleep(1)
-	  await msg.edit(content="[>>>>>")
-	  await asyncio.sleep(1)
-	  await msg.edit(content="[>>>>>>")
-	  await asyncio.sleep(1)
-	  await msg.edit(content="[>>>>>>>")
-	  await asyncio.sleep(1)
-	  await msg.edit(content="[>>>>>>>>")
-	  await asyncio.sleep(1)
-	  await msg.edit(content="[>>>>>>>>>")
-	  await asyncio.sleep(1)
-	  await msg.edit(content="[>>>>>>>>>>")
+	  msg = await ctx.send("[")
+	  for i in range(1,11):
+	    await asyncio.sleep(1)
+	    await msg.edit(content="["+">"*i)
 
-keep_alive()
-for file in cogss:
-  bot.load_extension(file)
+@bot.command()
+async def version(ctx):
+    await ctx.send(auth["version"])
+
+keep_alive.run()
+for file in os.listdir("./cogs"):
+  if file.endswith(".py"):
+    bot.load_extension(f"cogs.{file[:-3]}")
+    print("cogs."+str(file[:-3]),"has loaded")
 bot.loop.create_task(animationstatus())
-bot.run(os.getenv("TOKEN"))
+bot.run(auth["TOKEN"])

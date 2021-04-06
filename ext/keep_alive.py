@@ -1,15 +1,19 @@
 from flask import Flask
 from threading import Thread
+import sys
+
+cli = sys.modules['flask.cli']
+cli.show_server_banner = lambda *x: None
 
 app = Flask('')
 
 @app.route('/')
 def home():
-  return "hello world"
+  return "idk"
 
-def run():
+def run1():
   app.run(host='0.0.0.0',port=8080)
 
-def keep_alive():
-  t = Thread(target=run)
+def run():
+  t = Thread(target=run1)
   t.start()
