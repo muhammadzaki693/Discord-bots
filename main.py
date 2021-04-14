@@ -1,15 +1,33 @@
 import discord
 import asyncio
 import os
+import sys
+import config
+import platform
 import json
 import random
 from discord.ext import commands
 from ext import utils
-from ext import keep_alive
 from pretty_help import PrettyHelp, Navigation
+from flask import Flask
+from threading import Thread
 
-with open("data/auth.json") as f:
-  auth = json.load(f)
+cli = sys.modules['flask.cli']
+cli.show_server_banner = lambda *x: None
+
+#flask
+app = Flask('')
+
+@app.route('/')
+def home():
+  return "idk"
+
+def run1():
+  app.run(host='0.0.0.0',port=8080)
+
+t = Thread(target=run1)
+#end flask
+
 
 async def animationstatus():
     await bot.wait_until_ready()
@@ -21,28 +39,21 @@ async def animationstatus():
         await bot.change_presence(activity=discord.Game(name=status))
         await asyncio.sleep(10)
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or('>',':','$','<','_','%'),help_command=None)
+bot = commands.Bot(command_prefix=config.prefix,help_command=None)
 
 @bot.event
 async def on_ready():
-    print(f"""
-logged as: {bot.user.name}
-bot version: {auth['version']}
------
-cogs
-
-member.py
-devs.py
-development.py
------
-    """)
+    print(f"logged as: {bot.user.name}")
+    print(f"discord version: {discord.__version__}")
+    print(f"python version: {platform.python_version()}")
+    print(f"running on: {platform.system()+platform.release()}({os.name})")
 
 @bot.event
 async def on_message(message):
     if message.author == bot.user or message.author.bot:
       return "is bot"
     
-    if message.author.id == auth.blacklist:
+    if message.author.id == config.blacklist:
       return "blacklist"
     
     await bot.process_commands(message)
@@ -72,12 +83,12 @@ async def edit(ctx):
 
 @bot.command()
 async def version(ctx):
-    await ctx.send(auth["version"])
+    await ctx.send(config.version)
 
-keep_alive.run()
+t.start()
 for file in os.listdir("./cogs"):
   if file.endswith(".py"):
     bot.load_extension(f"cogs.{file[:-3]}")
     print("cogs."+str(file[:-3]),"has loaded")
 bot.loop.create_task(animationstatus())
-bot.run(auth["TOKEN"])
+bot.run(config.token)
